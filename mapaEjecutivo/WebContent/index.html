@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="US-ASCII">
+<title>Insert title here</title>
+<style>
+      html, body, #map-canvas {
+        height: 100%;
+        margin: 0px;
+        padding: 0px
+      }
+    </style>
+</head>
+<body>
+	<div id="map-canvas"></div>
+
+	<!-- jQuery Version 1.11.0 -->	
+	<script type="text/javascript" src="js/jquery-1.11.0.min.js"></script>
+	
+	<!-- google maps -->
+	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+	<script src="js/polygons.js"></script>
+	
+	
+	<script>
+	
+	
+	$(document).ready(function(){
+
+		try {
+			$.ajax({
+				type : 'GET',
+				dataType : 'jsonp',
+				url : "http://10.237.5.229:8080/presto/edge/api/rest/ms_mapa_divisional_SM932/Invoke?x-presto-resultFormat=json",
+				data : null,
+				error : function(jqXHR, textStatus, errorThrown) {
+					console.log(jqXHR);
+					console.log(textStatus);
+					console.log(errorThrown);
+				},
+				success : function(datos) {
+					console.log(datos);
+
+					/***********************************************************************/
+					
+					var divNoreste = "";
+					var divNoroeste = "";
+					var divSur = "";
+					var divMetro = "";
+					var divTelnor = "";
+					if (datos.result.record.length > 1) {				
+						for (i = 0; i < datos.result.record.length; i++) {					
+							if(datos.result.record[i].divisional.toString() === "NORESTE"){
+								divNoreste += datos.result.record[i].tipo_sitio.toString() + " : " +datos.result.record[i].incidentes.toString()+"<br>";
+							}else if(datos.result.record[i].divisional.toString() === "NOROESTE"){
+								divNoroeste += datos.result.record[i].tipo_sitio.toString() + " : " +datos.result.record[i].incidentes.toString()+"<br>";
+							}else if(datos.result.record[i].divisional.toString() === "SUR"){
+								divSur += datos.result.record[i].tipo_sitio.toString() + " : " +datos.result.record[i].incidentes.toString()+"<br>";
+							}else if(datos.result.record[i].divisional.toString() === "METRO"){
+								divMetro += datos.result.record[i].tipo_sitio.toString() + " : " +datos.result.record[i].incidentes.toString()+"<br>";
+							}else if(datos.result.record[i].divisional.toString() === "TELNOR"){
+								divTelnor += datos.result.record[i].tipo_sitio.toString() + " : " +datos.result.record[i].incidentes.toString()+"<br>";
+							}
+								
+						}
+					}					
+
+					google.maps.event.addDomListener(window, 'load', initialize(divNoreste, divNoroeste, divSur, divMetro, divTelnor));
+				}
+			});
+		} catch (error) {
+			alert(error);
+			$( "#" + divcontainer ).unmask();
+		}
+	});
+	
+	
+		function initialize(divNoreste, divNoroeste, divSur, divMetro, divTelnor) {
+			
+		
+			var mapOptions = {
+				zoom: 5,
+				center: new google.maps.LatLng(21.8833, -102.3),
+				mapTypeId: google.maps.MapTypeId.TERRAIN, 
+				infoWindow: null
+		  	}
+			var map = new google.maps.Map(document.getElementById('map-canvas'),mapOptions);
+			
+			var bounds = new google.maps.LatLngBounds();
+			var estados = polygons.mexico.records.record;
+			var polygonTelnor = new Array();
+			var sur = new Array();
+			var noroeste = new Array();
+			var noreste = new Array();
+			var metro = new Array();
+
+			for (var i = 0; i < estados.length; i++) {				
+				var estado = estados[i];
+				var coords = estado['coords'];
+				var polygon = [];
+				var divisional = "";
+				var divisionalName = "";
+				if(estado['name'].toUpperCase() === "HIDALGO" || estado['name'].toUpperCase() === "VERACRUZ" || estado['name'].toUpperCase() === "TLAXCALA" || estado['name'].toUpperCase() === "PUEBLA" || estado['name'].toUpperCase() === "OAXACA" || estado['name'].toUpperCase() === "CHIAPAS" || estado['name'].toUpperCase() === "CAMPECHE" || estado['name'].toUpperCase() === "TABASCO" || estado['name'].toUpperCase() === "QUINTANA ROO" || estado['name'].toUpperCase() === "YUCATAN"){				
+					console.log("Divisional SUR");
+					divisional = divSur;
+					divisionalName = "SUR";
+					for (var j = 0; j < coords.length; j++) {
+						var coord = coords[j];
+						var point = new google.maps.LatLng(coord[1], coord[0]);
+						polygon.push(point);
+						bounds.extend(point);
+					}
+				}else if(estado['name'].toUpperCase() === "SONORA" || estado['name'].toUpperCase() === "MICHOACAN" || estado['name'].toUpperCase() === "NAYARIT" || estado['name'].toUpperCase() === "JALISCO" || estado['name'].toUpperCase() === "SINALOA" || estado['name'].toUpperCase() === "BAJA CALIFORNIA SUR" || estado['name'].toUpperCase() === "COLIMA" || estado['name'].toUpperCase() === "DURANGO" || estado['name'].toUpperCase() === "CHIHUAHUA"){				
+					console.log("NOROESTE");
+					divisional = divNoroeste;
+					divisionalName = "NOROESTE";
+					for (var j = 0; j < coords.length; j++) {
+						var coord = coords[j];
+						var point = new google.maps.LatLng(coord[1], coord[0]);
+						polygon.push(point);
+						bounds.extend(point);
+					}
+				}else if(estado['name'].toUpperCase() === "TAMAULIPAS" || estado['name'].toUpperCase() === "NUEVO LEON" || estado['name'].toUpperCase() === "ZACATECAS" || estado['name'].toUpperCase() === "GUANAJUATO" || estado['name'].toUpperCase() === "AGUASCALIENTES" || estado['name'].toUpperCase() === "QUERETARO" || estado['name'].toUpperCase() === "COAHUILA" || estado['name'].toUpperCase() === "SAN LUIS POTOSI" || estado['name'].toUpperCase() === "CHIHUAHUA"){				
+					console.log("NORESTE");
+					divisional = divNoreste;
+					divisionalName = "NORESTE";
+					for (var j = 0; j < coords.length; j++) {
+						var coord = coords[j];
+						var point = new google.maps.LatLng(coord[1], coord[0]);
+						polygon.push(point);
+						bounds.extend(point);
+					}
+				}else if(estado['name'].toUpperCase() === "GUERRERO" || estado['name'].toUpperCase() === "MORELOS" || estado['name'].toUpperCase() === "ESTADO DE MEXICO" || estado['name'].toUpperCase() === "DISTRITO FEDERAL"){				
+					console.log("METRO");
+					divisional = divMetro;
+					divisionalName = "METRO";
+					for (var j = 0; j < coords.length; j++) {
+						var coord = coords[j];
+						var point = new google.maps.LatLng(coord[1], coord[0]);
+						polygon.push(point);
+						bounds.extend(point);
+					}
+				}else if(estado['name'].toUpperCase() === "BAJA CALIFORNIA"){				
+					console.log("TELNOR");
+					divisional = divTelnor;
+					divisionalName = "TELNOR";
+					for (var j = 0; j < coords.length; j++) {
+						var coord = coords[j];
+						var point = new google.maps.LatLng(coord[1], coord[0]);
+						polygon.push(point);
+						bounds.extend(point);
+					}
+				}
+
+				// Construct the polygon.
+		        mapaNacional = new google.maps.Polygon({
+		          paths: polygon,
+		          //strokeColor: states[a][2],
+		          strokeOpacity: 0.8,
+		          strokeWeight: 3,
+		          //fillColor: states[a][2],
+		          fillOpacity: 0.35,
+		          info: divisional,
+		          totalIncidents: divisionalName
+		        });
+		        mapaNacional.setMap(map);
+		        
+		        google.maps.event.addListener(mapaNacional, 'mouseover', function(event){
+	            	var info = this.info;
+	                var divisional = this.totalIncidents;
+	                var contentString = '<div class="tooltipMap"><b>Divisional:</b><br>' + divisional + ' <br><b>Incidentes Por Tipo de Sitio:</b><br> '+info+'</div>';
+	                // Replace the info window's content and position.
+	                infoWindow.setContent(contentString);
+	                infoWindow.setPosition(event.latLng);
+	                infoWindow.open(map);
+	            });
+		        
+		        google.maps.event.addListener(mapaNacional, 'click', function(event){
+		        	var divisional = this.totalIncidents;
+					console.log("me dio click: "+divisional);
+					drilldownState(divisional);
+	            	//drawElementsGral.mapaGeneral(codenet,"NACIONAL", true);
+	            });
+		        
+		        
+	            infoWindow = new google.maps.InfoWindow();		        
+			}			
+		}
+		
+		function drilldownState(divisional){
+			console.log("en la funcion: "+divisional);
+			try {
+				$.ajax({
+					type : 'GET',
+					dataType : 'jsonp',
+					url : "http://10.237.5.229:8080/presto/edge/api/rest/ms_mapa_estados_SM932/Invoke?x-presto-resultFormat=json",
+					data : {divisionales:divisional},
+					error : function(jqXHR, textStatus, errorThrown) {
+						console.log(jqXHR);
+						console.log(textStatus);
+						console.log(errorThrown);
+					},
+					success : function(response) {
+						console.log(response);
+						var estadosDiv = new Array();
+						var estadosDivText = new Array();
+						$.each( response, function( key, val ) {
+							$.each( val, function( key, val ) {
+								$.each( val, function( key, val ) {
+									var position = estadosDiv.indexOf(val.estado);
+									
+									if(position < 0){
+										estadosDiv.push(val.estado);										
+										estadosDivText.push(val.tipo_sitio+": "+val.incidentes+"<br>");
+									}else{
+										var text = estadosDivText[position] + " "+ val.tipo_sitio+": "+val.incidentes+"<br>";
+										estadosDivText[position] = text;
+										console.log("Ya existe se agrega texto");
+									}
+								});								
+							});							
+						});
+						console.log(estadosDiv);
+						console.log(estadosDivText);
+						
+						var mapOptions = {
+								zoom: 5,
+								center: new google.maps.LatLng(21.8833, -102.3),
+								mapTypeId: google.maps.MapTypeId.TERRAIN, 
+								infoWindow: null
+						}
+						
+						var map = new google.maps.Map(document.getElementById('map-canvas'),mapOptions);
+						var bounds = new google.maps.LatLngBounds();
+						var estados = polygons.mexico.records.record;
+
+						for (var i = 0; i < estados.length; i++) {
+							var estado = estados[i];
+					        var polygon = [];
+					        
+							for (var a = 0; a< estadosDiv.length; a++) {
+								if(estadosDiv[a] === estado['name'].toUpperCase() ){
+								
+									var coords = estado['coords'];
+						            for (var j = 0; j < coords.length; j++) {
+						              var coord = coords[j];
+						              var point = new google.maps.LatLng(coord[1], coord[0]);
+						              polygon.push(point);
+						              bounds.extend(point);
+						            }
+						            
+						         // Construct the polygon.
+						            mapaNacional = new google.maps.Polygon({
+						              paths: polygon,
+						              //strokeColor: states[a][2],
+						              strokeOpacity: 0.8,
+						              strokeWeight: 3,
+						              //fillColor: states[a][2],
+						              fillOpacity: 0.35,
+						              info: estadosDivText[a],
+						              //totalIncidents: states[a][1]
+						            });
+						            mapaNacional.setMap(map);
+						            
+						            google.maps.event.addListener(mapaNacional, 'mouseover', function(event){
+						            	var info = this.info;
+						                //var divisional = this.totalIncidents;
+						                var contentString = '<div class="tooltipMap">'+info+'</div>';
+						                // Replace the info window's content and position.
+						                infoWindow.setContent(contentString);
+						                infoWindow.setPosition(event.latLng);
+						                infoWindow.open(map);
+						            });
+									
+								}
+							}							
+						}						
+					}
+				});
+			} catch (error) {
+				alert(error);
+				$( "#" + divcontainer ).unmask();
+			}
+		}
+
+    </script>
+</body>
+</html>
