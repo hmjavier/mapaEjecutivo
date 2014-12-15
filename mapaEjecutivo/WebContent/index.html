@@ -43,29 +43,114 @@
 
 					/***********************************************************************/
 					
+					
+					var divNoresteA = new Array();
+					var divNoroesteA = new Array();
+					var divSurA = new Array();
+					var divMetroA = new Array();
+					var divTelnorA = new Array();
+					
 					var divNoreste = "";
 					var divNoroeste = "";
 					var divSur = "";
 					var divMetro = "";
 					var divTelnor = "";
+					
+					var totdivNoreste = 0;
+					var totdivNoroeste = 0;
+					var totdivSur = 0;
+					var totdivMetro = 0;
+					var totdivTelnor = 0;
 					if (datos.result.record.length > 1) {				
 						for (i = 0; i < datos.result.record.length; i++) {					
 							if(datos.result.record[i].divisional.toString() === "NORESTE"){
+								
+								divNoresteA[0] = datos.result.record[i].sitios;
+								
+								if(datos.result.record[i].tipo_sitio === "CORPORATE SITE"){
+									divNoresteA[1] = datos.result.record[i].tipo_sitio;
+									divNoresteA[2] = datos.result.record[i].incidentes;	
+								}else{
+									console.log(divNoresteA[1]);
+									if(divNoresteA[1] === undefined){
+										divNoresteA[1] = datos.result.record[i].tipo_sitio;
+										divNoresteA[2] = datos.result.record[i].incidentes;	
+									}else if(divNoresteA[1] === "CORPORATE SITE"){
+										divNoresteA[1] = datos.result.record[i].tipo_sitio;
+										divNoresteA[2] = datos.result.record[i].incidentes;
+									}else if(divNoresteA[1] != "CORPORATE SITE"){
+										divNoresteA[2] = parseInt(divNoresteA[2])+parseInt(datos.result.record[i].incidentes);
+									}
+								}
+								
+								totdivNoreste = datos.result.record[i].sitios;
 								divNoreste += datos.result.record[i].tipo_sitio.toString() + " : " +datos.result.record[i].incidentes.toString()+"<br>";
 							}else if(datos.result.record[i].divisional.toString() === "NOROESTE"){
+								
+								divNoroesteA[0] = datos.result.record[i].sitios;
+								
+								if(datos.result.record[i].tipo_sitio === "CORPORATE SITE"){
+									divNoroesteA[1] = datos.result.record[i].tipo_sitio;
+									divNoroesteA[2] = datos.result.record[i].incidentes;	
+								}else{
+									console.log(divNoroesteA[1]);
+									if(divNoroesteA[1] === undefined){
+										divNoroesteA[1] = datos.result.record[i].tipo_sitio;
+										divNoroesteA[2] = datos.result.record[i].incidentes;	
+									}else if(divNoroesteA[1] === "CORPORATE SITE"){
+										divNoroesteA[1] = datos.result.record[i].tipo_sitio;
+										divNoroesteA[2] = datos.result.record[i].incidentes;
+									}else if(divNoroesteA[1] != "CORPORATE SITE"){
+										divNoroesteA[2] = parseInt(divNoroesteA[2])+parseInt(datos.result.record[i].incidentes);
+									}
+								}
+								
+								totdivNoroeste = datos.result.record[i].sitios;
 								divNoroeste += datos.result.record[i].tipo_sitio.toString() + " : " +datos.result.record[i].incidentes.toString()+"<br>";
 							}else if(datos.result.record[i].divisional.toString() === "SUR"){
+								totdivSur = datos.result.record[i].sitios;
 								divSur += datos.result.record[i].tipo_sitio.toString() + " : " +datos.result.record[i].incidentes.toString()+"<br>";
 							}else if(datos.result.record[i].divisional.toString() === "METRO"){
+								totdivMetro = datos.result.record[i].sitios;
 								divMetro += datos.result.record[i].tipo_sitio.toString() + " : " +datos.result.record[i].incidentes.toString()+"<br>";
 							}else if(datos.result.record[i].divisional.toString() === "TELNOR"){
+								
+								divTelnorA[0] = datos.result.record[i].sitios;
+								
+								if(datos.result.record[i].tipo_sitio === "CORPORATE SITE"){
+									divTelnorA[1] = datos.result.record[i].tipo_sitio;
+									divTelnorA[2] = datos.result.record[i].incidentes;	
+								}else{
+									console.log(divTelnorA[1]);
+									if(divTelnorA[1] === undefined){
+										divTelnorA[1] = datos.result.record[i].tipo_sitio;
+										divTelnorA[2] = datos.result.record[i].incidentes;	
+									}else if(divTelnorA[1] === "CORPORATE SITE"){
+										divTelnorA[1] = datos.result.record[i].tipo_sitio;
+										divTelnorA[2] = datos.result.record[i].incidentes;
+									}else if(divTelnorA[1] != "CORPORATE SITE"){
+										divTelnorA[2] = parseInt(divTelnorA[2])+parseInt(datos.result.record[i].incidentes);
+									}
+								}
+								totdivTelnor = datos.result.record[i].sitios;
 								divTelnor += datos.result.record[i].tipo_sitio.toString() + " : " +datos.result.record[i].incidentes.toString()+"<br>";
 							}
-								
 						}
+						
+						console.log(divNoresteA);
+						console.log(divNoreste);
+						
+						console.log(divNoroesteA);
+						console.log(divNoroeste);
+						
+						console.log(divTelnorA);
+						console.log(divTelnor);
+						
+						
+						
 					}					
 
-					google.maps.event.addDomListener(window, 'load', initialize(divNoreste, divNoroeste, divSur, divMetro, divTelnor));
+					google.maps.event.addDomListener(window, 'load', initialize(divNoreste, divNoroeste, divSur, divMetro, divTelnor, totdivNoreste, totdivNoroeste, totdivSur, totdivMetro, totdivTelnor));
 				}
 			});
 		} catch (error) {
@@ -75,7 +160,7 @@
 	});
 	
 	
-		function initialize(divNoreste, divNoroeste, divSur, divMetro, divTelnor) {
+		function initialize(divNoreste, divNoroeste, divSur, divMetro, divTelnor, totdivNoreste, totdivNoroeste, totdivSur, totdivMetro, totdivTelnor) {
 			
 		
 			var mapOptions = {
@@ -100,30 +185,35 @@
 				var polygon = [];
 				var divisional = "";
 				var divisionalName = "";
-				if(estado['name'].toUpperCase() === "HIDALGO" || estado['name'].toUpperCase() === "VERACRUZ" || estado['name'].toUpperCase() === "TLAXCALA" || estado['name'].toUpperCase() === "PUEBLA" || estado['name'].toUpperCase() === "OAXACA" || estado['name'].toUpperCase() === "CHIAPAS" || estado['name'].toUpperCase() === "CAMPECHE" || estado['name'].toUpperCase() === "TABASCO" || estado['name'].toUpperCase() === "QUINTANA ROO" || estado['name'].toUpperCase() === "YUCATAN"){				
+				var totalSitios = 0;
+				if(estado['name'].toUpperCase() === "HIDALGO" || estado['name'].toUpperCase() === "VERACRUZ DE IGNACIO DE LA LLAVE" || estado['name'].toUpperCase() === "TLAXCALA" || estado['name'].toUpperCase() === "PUEBLA" || estado['name'].toUpperCase() === "OAXACA" || estado['name'].toUpperCase() === "CHIAPAS" || estado['name'].toUpperCase() === "CAMPECHE" || estado['name'].toUpperCase() === "TABASCO" || estado['name'].toUpperCase() === "QUINTANA ROO" || estado['name'].toUpperCase() === "YUCATAN"){				
 					console.log("Divisional SUR");
-					divisional = divSur;
+					divisional = "Sitios: "+totdivSur+"<br>"+divSur;
 					divisionalName = "SUR";
+					totalSitios = totdivSur;				
+					
 					for (var j = 0; j < coords.length; j++) {
 						var coord = coords[j];
 						var point = new google.maps.LatLng(coord[1], coord[0]);
 						polygon.push(point);
 						bounds.extend(point);
 					}
-				}else if(estado['name'].toUpperCase() === "SONORA" || estado['name'].toUpperCase() === "MICHOACAN" || estado['name'].toUpperCase() === "NAYARIT" || estado['name'].toUpperCase() === "JALISCO" || estado['name'].toUpperCase() === "SINALOA" || estado['name'].toUpperCase() === "BAJA CALIFORNIA SUR" || estado['name'].toUpperCase() === "COLIMA" || estado['name'].toUpperCase() === "DURANGO" || estado['name'].toUpperCase() === "CHIHUAHUA"){				
+				}else if(estado['name'].toUpperCase() === "SONORA" || estado['name'].toUpperCase() === "MICHOACAN DE OCAMPO" || estado['name'].toUpperCase() === "NAYARIT" || estado['name'].toUpperCase() === "JALISCO" || estado['name'].toUpperCase() === "SINALOA" || estado['name'].toUpperCase() === "BAJA CALIFORNIA SUR" || estado['name'].toUpperCase() === "COLIMA" || estado['name'].toUpperCase() === "DURANGO" || estado['name'].toUpperCase() === "CHIHUAHUA"){				
 					console.log("NOROESTE");
-					divisional = divNoroeste;
+					divisional = "Sitios: "+totdivNoroeste+"<br>"+divNoroeste;
 					divisionalName = "NOROESTE";
+					totalSitios = totdivNoroeste;
 					for (var j = 0; j < coords.length; j++) {
 						var coord = coords[j];
 						var point = new google.maps.LatLng(coord[1], coord[0]);
 						polygon.push(point);
 						bounds.extend(point);
 					}
-				}else if(estado['name'].toUpperCase() === "TAMAULIPAS" || estado['name'].toUpperCase() === "NUEVO LEON" || estado['name'].toUpperCase() === "ZACATECAS" || estado['name'].toUpperCase() === "GUANAJUATO" || estado['name'].toUpperCase() === "AGUASCALIENTES" || estado['name'].toUpperCase() === "QUERETARO" || estado['name'].toUpperCase() === "COAHUILA" || estado['name'].toUpperCase() === "SAN LUIS POTOSI" || estado['name'].toUpperCase() === "CHIHUAHUA"){				
+				}else if(estado['name'].toUpperCase() === "TAMAULIPAS" || estado['name'].toUpperCase() === "NUEVO LEON" || estado['name'].toUpperCase() === "ZACATECAS" || estado['name'].toUpperCase() === "GUANAJUATO" || estado['name'].toUpperCase() === "AGUASCALIENTES" || estado['name'].toUpperCase() === "QUERETARO" || estado['name'].toUpperCase() === "COAHUILA DE ZARAGOZA" || estado['name'].toUpperCase() === "SAN LUIS POTOSI" || estado['name'].toUpperCase() === "CHIHUAHUA"){				
 					console.log("NORESTE");
-					divisional = divNoreste;
+					divisional = "Sitios: "+totdivNoreste+"<br>"+divNoreste;
 					divisionalName = "NORESTE";
+					totalSitios = totdivNoreste;
 					for (var j = 0; j < coords.length; j++) {
 						var coord = coords[j];
 						var point = new google.maps.LatLng(coord[1], coord[0]);
@@ -132,8 +222,9 @@
 					}
 				}else if(estado['name'].toUpperCase() === "GUERRERO" || estado['name'].toUpperCase() === "MORELOS" || estado['name'].toUpperCase() === "ESTADO DE MEXICO" || estado['name'].toUpperCase() === "DISTRITO FEDERAL"){				
 					console.log("METRO");
-					divisional = divMetro;
+					divisional = "Sitios: "+totdivMetro+"<br>"+divMetro;
 					divisionalName = "METRO";
+					totalSitios = totdivMetro;
 					for (var j = 0; j < coords.length; j++) {
 						var coord = coords[j];
 						var point = new google.maps.LatLng(coord[1], coord[0]);
@@ -142,8 +233,9 @@
 					}
 				}else if(estado['name'].toUpperCase() === "BAJA CALIFORNIA"){				
 					console.log("TELNOR");
-					divisional = divTelnor;
+					divisional = "Sitios: "+totdivTelnor+"<br>"+divTelnor;
 					divisionalName = "TELNOR";
+					totalSitios = totdivTelnor;
 					for (var j = 0; j < coords.length; j++) {
 						var coord = coords[j];
 						var point = new google.maps.LatLng(coord[1], coord[0]);
@@ -204,6 +296,7 @@
 						console.log(response);
 						var estadosDiv = new Array();
 						var estadosDivText = new Array();
+						var colorDivText = new Array();
 						$.each( response, function( key, val ) {
 							$.each( val, function( key, val ) {
 								$.each( val, function( key, val ) {
@@ -211,17 +304,60 @@
 									
 									if(position < 0){
 										estadosDiv.push(val.estado);										
-										estadosDivText.push(val.tipo_sitio+": "+val.incidentes+"<br>");
+										estadosDivText.push("<b>"+val.state+"</b><br>Sitios:"+val.sitios+"<br>"+val.tipo_sitio+": "+val.incidentes+"<br>");
+										
+										
+										//console.log(val.state +" -- "+val.tipo_sitio+" -- "+val.incidentes);
+										
+										if(val.tipo_sitio === "CORPORATE SITE" && parseInt(val.incidentes) > 1){
+											console.log(val.state +" -- "+val.tipo_sitio+" -- "+val.incidentes);
+											colorDivText.push("#FF0202");
+										}else if(val.tipo_sitio === "CORPORATE SITE" && parseInt(val.incidentes) == 1){
+											colorDivText.push("#FFE400");	
+										}else{											
+											if( parseInt(val.incidentes) > (parseInt(val.sitios) * .1)){
+												colorDivText.push("#FF0202");
+											}else if(parseInt(val.incidentes) < (parseInt(val.sitios) * .1) && parseInt(val.incidentes) > (parseInt(val.sitios) * .05)){
+												colorDivText.push("#FFE400");	
+											}else{
+												colorDivText.push("#17FF00");	
+											}											
+										}
+										
 									}else{
 										var text = estadosDivText[position] + " "+ val.tipo_sitio+": "+val.incidentes+"<br>";
 										estadosDivText[position] = text;
-										console.log("Ya existe se agrega texto");
+										
+										if((colorDivText[position] != "#FF0202" || colorDivText[position] != "#FFE400") && val.tipo_sitio === "CORPORATE SITE"){
+											if(val.tipo_sitio === "CORPORATE SITE" && parseInt(val.incidentes) > 1){
+												console.log(val.state +" -- "+val.tipo_sitio+" -- "+val.incidentes);
+												colorDivText[position] = "#FF0202"; 
+											}else if(val.tipo_sitio === "CORPORATE SITE" && parseInt(val.incidentes) == 1){
+												colorDivText[position] = "#FFE400";
+											}else{											
+												if( parseInt(val.incidentes) > (parseInt(val.sitios) * .1)){
+													colorDivText[position] = "#FF0202";
+												}else if(parseInt(val.incidentes) < (parseInt(val.sitios) * .1) && parseInt(val.incidentes) > (parseInt(val.sitios) * .05)){
+													colorDivText[position] = "#FFE400";	
+												}else{
+													colorDivText[position] = "#17FF00";	
+												}
+												
+											}	
+										}else{
+											console.log("soy corporativo");
+										}
+										
+										
+										//console.log("Ya existe se agrega texto");
 									}
 								});								
 							});							
 						});
+						/*
 						console.log(estadosDiv);
 						console.log(estadosDivText);
+						console.log(colorDivText);*/
 						
 						var mapOptions = {
 								zoom: 5,
@@ -249,13 +385,13 @@
 						              bounds.extend(point);
 						            }
 						            
-						         // Construct the polygon.
+						         	// Construct the polygon.
 						            mapaNacional = new google.maps.Polygon({
 						              paths: polygon,
-						              //strokeColor: states[a][2],
+						              strokeColor: colorDivText[a],
 						              strokeOpacity: 0.8,
 						              strokeWeight: 3,
-						              //fillColor: states[a][2],
+						              fillColor: colorDivText[a],
 						              fillOpacity: 0.35,
 						              info: estadosDivText[a],
 						              //totalIncidents: states[a][1]
